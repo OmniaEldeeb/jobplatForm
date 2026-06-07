@@ -51,3 +51,36 @@ export function toggleSaveJob(jobId: number) {
 export function getSavedJobs() {
   return apiRequest<any>("/candidate/saved-jobs", {});
 }
+
+
+export function getCompanyDashboard() {
+  return apiRequest<any>("/company/dashboard");
+}
+
+export function getCompanyJobs() {
+  return apiRequest<any>("/company/jobs");
+}
+
+export function createJob(data: Record<string, any>) {
+  return apiRequest<any>("/company/jobs", { method: "POST", body: data });
+}
+
+export function updateJob(id: number, data: Record<string, any>) {
+  return apiRequest<any>(`/company/jobs/${id}`, { method: "PUT", body: data });
+}
+
+export function deleteJob(id: number) {
+  return apiRequest<any>(`/company/jobs/${id}`, { method: "DELETE" });
+}
+
+export function toggleJobActive(id: number) {
+  return apiRequest<any>(`/company/jobs/${id}/toggle`, { method: "PATCH" });
+}
+
+export function getCompanyJob(id: number) {
+  return apiRequest<any>(`/company/jobs/${id}`);
+}
+
+export function getJobApplications(jobId: number) {
+  return apiRequest<any>(`/company/jobs/${jobId}/applications`);
+}
