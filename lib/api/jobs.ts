@@ -39,3 +39,14 @@ export function applyToJob(jobId: number, data: { cv_id: number; cover_letter?: 
 export function getCvs() {
   return apiRequest<any>("/cv", {});
 }
+
+
+export function toggleSaveJob(jobId: number) {
+  return apiRequest<{ saved: boolean }>(`/jobs/${jobId}/save`, {
+    method: "POST",
+  });
+}
+
+export function getSavedJobs() {
+  return apiRequest<any>("/candidate/saved-jobs", {});
+}

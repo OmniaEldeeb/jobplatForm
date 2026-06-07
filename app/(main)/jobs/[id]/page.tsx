@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getJob } from "@/lib/api/jobs";
+import { getJob, toggleSaveJob } from "@/lib/api/jobs";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Button } from "@/components/ui/Button";
 import {
   Briefcase, MapPin, ArrowLeft, Clock,
-  Monitor, Building2, DollarSign
+  DollarSign, Bookmark
 } from "lucide-react";
 import Link from "next/link";
-import { proxyImage } from "@/lib/api/client";
+
 const workTypeLabel: Record<string, string> = {
   full_time: "Full Time", part_time: "Part Time",
   contract: "Contract", freelance: "Freelance", internship: "Internship",
@@ -18,17 +18,9 @@ const workModelLabel: Record<string, string> = {
   onsite: "On-site", remote: "Remote", hybrid: "Hybrid",
 };
 const levelLabel: Record<string, string> = {
-  entry: "Entry",
-  junior: "Junior",
-  mid: "Mid",
-  senior: "Senior",
-  lead: "Lead",
-  staff: "Staff",
-  principal: "Principal",
-  manager: "Manager",
-  director: "Director",
-  vp: "VP",
-  executive: "Executive",
+  entry: "Entry", junior: "Junior", mid: "Mid", senior: "Senior",
+  lead: "Lead", staff: "Staff", principal: "Principal",
+  manager: "Manager", director: "Director", vp: "VP", executive: "Executive",
 };
 
 export default function JobDetailPage() {
@@ -37,14 +29,27 @@ export default function JobDetailPage() {
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     getJob(Number(id)).then((res) => {
       setLoading(false);
-      if (res.result) setJob(res.data);
-      else setNotFound(true);
+      if (res.result) {
+        setJob(res.data);
+        setSaved(res.data.is_saved ?? false);
+      } else {
+        setNotFound(true);
+      }
     });
   }, [id]);
+
+  async function handleSave() {
+    setSaving(true);
+    const res = await toggleSaveJob(Number(id));
+    setSaving(false);
+    if (res.result) setSaved(res.data.saved);
+  }
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
@@ -82,15 +87,21 @@ export default function JobDetailPage() {
           <div className="flex items-center gap-3 mb-4">
             {job.company?.logo_url ? (
               <img
-                src={proxyImage(job.company.logo_url)}
+                src={job.company.logo_url}
                 alt={job.company.name}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.nextElementSibling?.removeAttribute("style");
+                }}
                 className="w-12 h-12 rounded-xl object-cover border border-gray-100 dark:border-gray-800"
               />
-            ) : (
-              <div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold">
-                {job.company?.name?.[0]?.toUpperCase() ?? "?"}
-              </div>
-            )}
+            ) : null}
+            <div
+              style={job.company?.logo_url ? { display: "none" } : {}}
+              className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-lg"
+            >
+              {job.company?.name?.[0]?.toUpperCase() ?? "?"}
+            </div>
             <div>
               <p className="font-medium text-gray-900 dark:text-gray-100">{job.company?.name}</p>
               <p className="text-sm text-gray-500">{job.company?.industry}</p>
@@ -140,10 +151,23 @@ export default function JobDetailPage() {
             )}
           </div>
 
-          {/* Apply button */}
-          <Button size="lg" fullWidth onClick={() => router.push(`/jobs/${id}/apply`)}>
-            Apply Now
-          </Button>
+          {/* Action buttons */}
+          <div className="flex gap-3">
+            <Button size="lg" className="flex-1" onClick={() => router.push(`/jobs/${id}/apply`)}>
+              Apply Now
+            </Button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                saved
+                  ? "border-primary-500 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/30"
+                  : "border-gray-200 dark:border-gray-700 text-gray-500 hover:border-gray-300"
+              }`}
+            >
+              <Bookmark size={20} fill={saved ? "currentColor" : "none"} />
+            </button>
+          </div>
         </div>
 
         {/* Description */}
