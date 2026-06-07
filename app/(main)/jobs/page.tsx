@@ -5,6 +5,8 @@ import { JobFilters } from "@/components/jobs/JobFilters";
 import { getJobs, getCategories } from "@/lib/api/jobs";
 import { Briefcase } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { User } from "lucide-react";
+import Link from "next/link";
 
 const EMPTY_FILTERS = {
   search: "", work_type: "", work_model: "",
@@ -59,7 +61,14 @@ export default function JobsPage() {
             <Briefcase size={20} />
             <span className="font-semibold text-lg">JobPlatform</span>
           </div>
-          <ThemeToggle />
+
+          <div className="flex items-center gap-2">
+            <Link href="/profile"
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <User size={18} />
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
         <div className="max-w-5xl mx-auto mt-4">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-50">

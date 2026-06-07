@@ -68,6 +68,7 @@ export function getMe() {
   return apiRequest<{ user: { id: number; name: string; email: string; role: string } }>("/auth/me");
 }
 
+
 // ─── Forgot password — step 1 ─────────────────────────────────────────────
 export function forgotPassword(identifier: string) {
   return apiRequest("/auth/forgot-password", {
@@ -98,4 +99,29 @@ export function resetPassword(data: {
     body: data,
     noAuth: true,
   });
+}
+
+
+
+
+export function getMyProfile() {
+  return apiRequest<any>("/me/profile");
+}
+
+export function updateMyProfile(data: Record<string, any>) {
+  return apiRequest<any>("/me/profile", { method: "POST", body: data });
+}
+
+export function uploadAvatar(file: File) {
+  const form = new FormData();
+  form.append("avatar", file);
+  return apiRequest<any>("/me/avatar", {
+    method: "POST",
+    body: form as any,
+    isFormData: true,
+  });
+}
+
+export function logoutApi() {
+  return apiRequest("/auth/logout", { method: "POST" });
 }
