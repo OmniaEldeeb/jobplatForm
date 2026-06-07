@@ -12,16 +12,16 @@ export default function SavedJobsPage() {
 
   useEffect(() => {
     getSavedJobs().then((res) => {
-      setLoading(false);
-      if (res.result) {
+        setLoading(false);
+        if (res.result) {
         const raw = res.data;
-        if (Array.isArray(raw?.saved_jobs?.data)) setJobs(raw.saved_jobs.data);
-        else if (Array.isArray(raw?.saved_jobs)) setJobs(raw.saved_jobs);
-        else if (Array.isArray(raw?.data)) setJobs(raw.data);
-        else setJobs([]);
+        const items = raw?.saved_jobs?.data ?? raw?.saved_jobs ?? raw?.data ?? [];
+        // Extract the actual job from each saved job item
+        const jobs = items.map((item: any) => item.job ?? item);
+        setJobs(jobs.filter(Boolean));
         }
     });
-  }, []);
+    }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -74,7 +74,7 @@ export default function SavedJobsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {jobs.map((job: any) => (
-              <JobCard key={job.id} job={job} showSave={true} />
+            <JobCard key={job.id} job={job} showSave={true} />
             ))}
           </div>
         )}
