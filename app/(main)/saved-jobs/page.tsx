@@ -15,9 +15,9 @@ export default function SavedJobsPage() {
       setLoading(false);
       if (res.result) {
         const raw = res.data;
-        if (Array.isArray(raw)) setJobs(raw);
+        if (Array.isArray(raw?.saved_jobs?.data)) setJobs(raw.saved_jobs.data);
+        else if (Array.isArray(raw?.saved_jobs)) setJobs(raw.saved_jobs);
         else if (Array.isArray(raw?.data)) setJobs(raw.data);
-        else if (Array.isArray(raw?.jobs)) setJobs(raw.jobs);
         else setJobs([]);
         }
     });

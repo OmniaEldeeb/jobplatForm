@@ -12,6 +12,7 @@ export type JobFilters = {
 
 export function getJobs(params?: JobFilters) {
   const query = new URLSearchParams();
+  query.set("active_only", "true"); // always filter active jobs
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined && v !== "") query.set(k, String(v));
