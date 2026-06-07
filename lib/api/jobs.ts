@@ -27,3 +27,15 @@ export function getJob(id: number) {
 export function getCategories() {
   return apiRequest<any>("/categories", { noAuth: true });
 }
+
+
+export function applyToJob(jobId: number, data: { cv_id: number; cover_letter?: string }) {
+  return apiRequest<any>(`/jobs/${jobId}/apply`, {
+    method: "POST",
+    body: data,
+  });
+}
+
+export function getCvs() {
+  return apiRequest<any>("/cv", {});
+}
