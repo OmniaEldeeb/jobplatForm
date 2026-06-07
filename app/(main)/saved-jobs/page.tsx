@@ -13,7 +13,13 @@ export default function SavedJobsPage() {
   useEffect(() => {
     getSavedJobs().then((res) => {
       setLoading(false);
-      if (res.result) setJobs(res.data.data ?? res.data);
+      if (res.result) {
+        const raw = res.data;
+        if (Array.isArray(raw)) setJobs(raw);
+        else if (Array.isArray(raw?.data)) setJobs(raw.data);
+        else if (Array.isArray(raw?.jobs)) setJobs(raw.jobs);
+        else setJobs([]);
+        }
     });
   }, []);
 
